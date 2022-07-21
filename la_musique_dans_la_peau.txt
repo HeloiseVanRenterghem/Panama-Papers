@@ -1,0 +1,82 @@
+1) Récupérer tous les albums
+SELECT * FROM albums;
+
+
+2) Récupérer tous les albums dont le titre contient "Great"
+SELECT * FROM albums WHERE title LIKE '%Great%'
+# avec les mots de type "Greatest"
+SELECT * FROM albums WHERE title LIKE '%Great %'
+# sans les mots de type "Greatest"
+
+
+3) Donner le nombre total d'albums contenus dans la base (sans regarder les id bien sûr)
+SELECT COUNT(*) FROM albums
+
+
+4) Supprimer tous les albums dont le nom contient "music"
+SELECT * FROM albums WHERE lower(Title) NOT LIKE '%music %';
+
+
+5) Récupérer tous les albums écrits par AC/DC
+SELECT
+	Title AS AlbumTitle,
+    Name AS ArtistName
+FROM albums
+	JOIN artists ON albums.ArtistId = artists.ArtistId
+WHERE Name = 'AC/DC';
+
+
+6) Récupérer tous les titres des albums de AC/DC
+SELECT
+    artists.Name AS ArtistName,
+    tracks.Name AS TrackName
+FROM 
+    artists,
+    albums,
+    tracks
+WHERE
+    albums.ArtistId = artists.ArtistId
+    AND albums.AlbumId = tracks.AlbumId
+    AND artists.Name = 'AC/DC' ;
+
+
+7) Récupérer la liste des titres de l'album "Let There Be Rock"
+SELECT
+	Title AS AlbumTitle,
+    Name AS TrackName
+FROM albums
+    JOIN tracks ON albums.AlbumId = tracks.AlbumId
+WHERE Title = 'Let There Be Rock' ;
+
+
+8) Afficher le prix de cet album ainsi que sa durée totale
+SELECT
+	sum(UnitPrice),
+    sum(Milliseconds)
+FROM tracks
+WHERE AlbumId IN (
+	SELECT AlbumId
+	FROM albums
+	WHERE Title = 'Let There Be Rock'
+	);
+
+
+9) Afficher le coût de l'intégralité de la discographie de "Deep Purple"
+SELECT
+	sum(UnitPrice)
+FROM tracks
+WHERE AlbumId IN (
+	SELECT albums.AlbumId
+	FROM albums
+	JOIN artists ON albums.ArtistId = artists.ArtistId
+	Where Name = 'Deep Purple'
+	);
+
+
+10) Créer l'album de ton artiste favori en base, en renseignant correctement les trois tables albums, artists et tracks
+SELECT * FROM artists WHERE Name LIKE '%Lauryn Hill%'
+# pour savoir si l'artiste est déjà dans la base 
+INSERT INTO albums (AlbumId, Title, ArtistId) VALUES (348, 'The Miseducation of Lauryn Hill', 276);
+INSERT INTO artists (ArtistId, Name) VALUES (276, 'Lauryn Hill');
+INSERT INTO tracks (TrackId, Name, AlbumId, MediaTypeld, Genreld, Composer, Milliseconds, Bytes, UnitPrice) VALUES (3504, 'Everything is Everything', 348, 1, 17, 'Lauryn Hill', 247051, 4331652, 0.99);
+### Ne marche pas !
