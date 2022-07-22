@@ -1,0 +1,137 @@
+1) Combien la base de données contient-elle de sociétés offshores différentes dont la source est "Panama Papers" ?
+SELECT COUNT(DISTINCT id)
+FROM entity
+WHERE lower(source) LIKE 'Panama Papers';
+
+
+2) Quel intermédiaire a créé le plus de sociétés offshores ? A-t-on son adresse et son pays ?
+SELECT
+	intermediary.id AS intermediary_id,
+	intermediary.name AS intermediary_name,
+	address.address AS intermediary_address,
+	address.countries AS intermediary_country,
+    COUNT(*) AS count_entities
+FROM (entity
+JOIN assoc_inter_entity ON entity.id = assoc_inter_entity.entity
+JOIN intermediary ON assoc_inter_entity.inter = intermediary.id
+JOIN address ON intermediary.id_address = address.id_address
+)
+GROUP BY intermediary_id
+ORDER BY count_entities DESC LIMIT 1;
+
+
+3) Combien la base contient-elle de bénéficiaires avec un nom unique ? Quel est le bénéficiaire dont le nom revient le plus souvent ?
+SELECT COUNT(DISTINCT name) FROM officer;
+SELECT
+	name,
+    count(*) as count_names
+FROM officer
+GROUP BY name
+ORDER BY count_names DESC LIMIT 1;
+
+
+4) Donner la liste des juridictions avec le nombre d'entreprises offshores enregistrées sur chaque territoire, triée par ordre décroissant.
+SELECT
+    jurisdiction,
+    jurisdiction_description,
+    count(name) AS count_entities
+FROM entity
+GROUP BY jurisdiction
+ORDER BY count_entities DESC;
+
+
+5) Regrouper les sociétés offshores par statut, et trier la liste par ordre décroissant.
+SELECT
+    status,
+    count(name) AS count_entities,
+    GROUP_CONCAT(name) AS list_entities
+FROM entity
+GROUP BY status
+ORDER BY count_entities DESC;
+
+
+6) Trouver la liste des bénéficiaires dont le nom contient "BNP" et ajouter, pour chaque bénéficiaire, le nom des sociétés offshores.
+SELECT
+	officer.name AS name_officer,
+	entity.name AS name_entity
+FROM
+	officer,
+	entity,
+	assoc_officer_entity
+WHERE
+	assoc_officer_entity.officer = officer.id
+	AND assoc_officer_entity.entity = entity.id
+    AND officer.name LIKE '%BNP%'
+ORDER BY officer.name;
+
+
+7) Trouver la liste des sociétés dont la juridiction est "France", "Monaco" ou "Réunion".
+SELECT
+	jurisdiction_description,
+    id,
+    name
+FROM entity
+WHERE jurisdiction_description = 'France'
+	OR jurisdiction_description = 'Monaco'
+    OR jurisdiction_description = 'Réunion';
+
+
+8) Trouver la liste des sociétés dont le pays de l'adresse et le pays de la juridiction sont différents.
+SELECT
+	name,
+	jurisdiction,
+	jurisdiction_description,
+	countries,
+	country_codes
+FROM entity
+	JOIN address ON entity.id_address = address.id_address
+WHERE
+	jurisdiction_description != country_codes;
+
+
+9) Trouver la liste des bénéficiaires qui ont des sociétés au même nom et enregistrées à la même date, trier la liste par ordre décroissant.
+SELECT
+	entity.name AS name_entity,
+    entity.incorporation_date,
+    COUNT(*) AS cnt_officers,
+    GROUP_CONCAT(officer.name) AS name_officer
+FROM
+	officer,
+	entity,
+	assoc_officer_entity
+WHERE
+	assoc_officer_entity.officer = officer.id
+	AND assoc_officer_entity.entity = entity.id
+GROUP BY entity.name, entity.incorporation_date
+ORDER BY cnt_officers DESC, entity.name ASC;
+
+
+10) Donner la liste des intermédiaires qui ont aussi été bénéficiaires, en ajoutant leur nom de bénéficiaire et leur adresse.
+SELECT
+	officer.name AS name,
+	address.address,
+	address.countries,
+    intermediary.id AS intermediary_id,
+    officer.id AS officer_id
+FROM
+	officer,
+	intermediary,
+	address,
+	assoc_inter_offi
+WHERE
+	assoc_inter_offi.inter = intermediary.id
+	AND assoc_inter_offi.officer = officer.id
+	AND intermediary.id_address = address.id_address;
+
+
+11) Donner le top 10 des bénéficiaires qui ont le plus d'identités différentes (similar name and address) et le nombre d'identités correspondant.
+
+
+12) Donner le top 10 des bénéficiaires qui ont le plus de parts toujours valides dans des entreprises offshores (dont la date de fin n'est pas encore passée).
+
+
+13) Retrouver dans la base au moins 3 personnalités que tu connais.
+SELECT * FROM officer
+WHERE name LIKE '%Cahuzac%'
+OR name LIKE 'Emma Watson'
+OR name LIKE '%Alex%Bongrain%'
