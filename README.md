@@ -1,4 +1,4 @@
-PANAMA PAPERS
+# PANAMA PAPERS
 
 Tu es dans la peau d'un journaliste d'investigation du Fronde qui doit ré-enquêter sur les Panama Papers. La revue pense qu'il faut re-sensibiliser le public aux découvertes faites en 2016.
 
@@ -18,4 +18,4 @@ Voici la liste de questions auxquelles tu dois répondre :
 - Donner la liste des intermédiaires qui ont aussi été bénéficiaires, en ajoutant leur nom de bénéficiaire et leur adresse.
 - Donner le top 10 des bénéficiaires qui ont le plus d'identités différentes (similar name and address) et le nombre d'identités correspondant.
 - Donner le top 10 des bénéficiaires qui ont le plus de parts toujours valides dans des entreprises offshores (dont la date de fin n'est pas encore passée).
-- Question bonus : réussir à retrouver dans la base au moins 3 personnalités que tu connais (indice) 😎😎😎
+- Question bonus : réussir à retrouver dans la base au moins 3 personnalités que tu connais 😎😎😎
